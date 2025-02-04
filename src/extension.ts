@@ -604,8 +604,13 @@ function checkReminders(provider: TodoTreeProvider): void {
 
 async function findTodosInWorkspace(provider: TodoTreeProvider) {
     try {
-        provider.clearTodos();
-        
+        const existingTodos = provider.getAllTodos();
+        const existingTodoMap = new Map<string, Todoify.TodoItem>();
+        existingTodos.forEach(todo => {
+            const key = `${todo.file}:${todo.line}`;
+            existingTodoMap.set(key, todo);
+        });
+
         const files = await vscode.workspace.findFiles('**/*.*', '**/node_modules/**');
         const processedFiles = new Set<string>();
         
@@ -625,20 +630,25 @@ async function findTodosInWorkspace(provider: TodoTreeProvider) {
                         const match = getKeywordMatch(line);
                         if (!match) return null;
 
+                        const key = `${file.fsPath}:${index + 1}`;
+                        const existingTodo = existingTodoMap.get(key);
+
                         const todo: Todoify.TodoItem = {
-                            id: generateId(),
+                            id: existingTodo?.id || generateId(),
                             text: match.text,
                             file: file.fsPath,
                             line: index + 1,
-                            completed: false,
-                            priority: detectPriority(match.text),
+                            completed: existingTodo?.completed || false,
+                            priority: existingTodo?.priority || detectPriority(match.text),
                             type: match.type,
-                            created: new Date(),
-                            lastModified: new Date(),
-                            tags: match.tags || [],
-                            category: match.category,
-                            subtasks: [],
-                            notes: match.notes || ''
+                            created: existingTodo?.created || new Date(),
+                            lastModified: existingTodo?.lastModified || new Date(),
+                            tags: match.tags || existingTodo?.tags || [],
+                            category: match.category || existingTodo?.category,
+                            subtasks: existingTodo?.subtasks || [],
+                            notes: match.notes || existingTodo?.notes || '',
+                            dueDate: existingTodo?.dueDate,
+                            reminder: existingTodo?.reminder
                         };
 
                         return todo;
@@ -664,6 +674,7 @@ async function findTodosInWorkspace(provider: TodoTreeProvider) {
             }
         });
 
+        provider.clearTodos();
         Array.from(uniqueTodos.values()).forEach(todo => provider.addTodo(todo));
     } catch (error) {
         console.error('Error scanning todos:', error);
@@ -836,27 +847,70 @@ export function activate(context: vscode.ExtensionContext) {
                 vscode.window.showInformationMessage('Todo deleted successfully');
             }
         }],
-        ['todoify.duplicateTodo', (item: Todoify.TodoItem) => {
+        ['todoify.duplicateTodo', async (item: Todoify.TodoItem) => {
             if (!item) { return; }
             
-            const newTodo: Todoify.TodoItem = {
-                ...item,
-                id: generateId(),
-                text: `${item.text} (Copy)`,
-                created: new Date(),
-                lastModified: new Date(),
-                completed: false,
-                subtasks: item.subtasks.map(st => ({
-                    ...st,
-                    id: generateId(),
-                    completed: false,
-                    created: new Date(),
-                    lastModified: new Date()
-                }))
-            };
-            
-            todoProvider.addTodo(newTodo);
-            vscode.window.showInformationMessage('Todo duplicated successfully');
+            try {
+                const document = await vscode.workspace.openTextDocument(item.file);
+                const edit = new vscode.WorkspaceEdit();
+                const line = document.lineAt(item.line - 1);
+                const lineText = line.text;
+
+                const todoMatch = getKeywordMatch(lineText);
+                if (!todoMatch) {
+                    throw new Error('Invalid todo format');
+                }
+
+                edit.insert(document.uri, new vscode.Position(item.line, 0), '\n' + lineText);
+
+                const success = await vscode.workspace.applyEdit(edit);
+                if (success) {
+                    await document.save();
+
+                    const text = document.getText();
+                    const lines = text.split('\n');
+                    const newTodos = lines.map((line, index) => {
+                        try {
+                            const match = getKeywordMatch(line);
+                            if (!match) return null;
+
+                            return {
+                                id: generateId(),
+                                text: match.text,
+                                file: document.uri.fsPath,
+                                line: index + 1,
+                                completed: false,
+                                priority: detectPriority(match.text),
+                                type: match.type,
+                                created: new Date(),
+                                lastModified: new Date(),
+                                tags: match.tags || [],
+                                category: match.category,
+                                subtasks: [],
+                                notes: match.notes || ''
+                            } as Todoify.TodoItem;
+                        } catch (error) {
+                            console.error(`Error processing line: ${index + 1}`, error);
+                            return null;
+                        }
+                    }).filter((todo): todo is Todoify.TodoItem => todo !== null);
+
+                    const currentTodos = todoProvider.getAllTodos();
+                    currentTodos
+                        .filter(t => t.file === document.uri.fsPath)
+                        .forEach(t => todoProvider.deleteTodo(t));
+
+                    newTodos.forEach(todo => todoProvider.addTodo(todo));
+
+                    vscode.window.showInformationMessage('Todo duplicated successfully');
+                } else {
+                    throw new Error('Failed to apply edit');
+                }
+            } catch (error) {
+                console.error('Error duplicating todo:', error);
+                const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+                vscode.window.showErrorMessage(`Error duplicating todo: ${errorMessage}`);
+            }
         }],
         ['todoify.toggleTodo', (item: Todoify.TodoItem) => { if (!item) { return; } todoProvider.toggleTodo(item); }],
         ['todoify.openTodo', async (item: Todoify.TodoItem) => {

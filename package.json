@@ -2,7 +2,7 @@
     "name": "todoify",
     "displayName": "Todoify",
     "description": "A VS Code extension for easy todo management.",
-    "version": "0.1.2",
+    "version": "0.1.3",
     "publisher": "queaxtra",
     "author": {
         "name": "Queaxtra"
