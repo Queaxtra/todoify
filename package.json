@@ -1,0 +1,248 @@
+{
+    "name": "todoify",
+    "displayName": "Todoify",
+    "description": "A VS Code extension for easy todo management.",
+    "version": "0.1.4",
+    "publisher": "queaxtra",
+    "author": {
+        "name": "Queaxtra"
+    },
+    "license": "MIT",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/queaxtra/todoify.git"
+    },
+    "keywords": [
+        "todo",
+        "task",
+        "productivity",
+        "management",
+        "reminder",
+        "tags",
+        "categories"
+    ],
+    "icon": "resources/icon.png",
+    "galleryBanner": {
+        "color": "#000000",
+        "theme": "dark"
+    },
+    "engines": {
+        "vscode": "^1.102.0"
+    },
+    "categories": [
+        "Other"
+    ],
+    "activationEvents": [],
+    "main": "./out/extension.js",
+    "contributes": {
+        "keybindings": [
+            {
+                "command": "todoify.focus",
+                "key": "cmd+shift+t",
+                "mac": "cmd+shift+t",
+                "when": "editorTextFocus"
+            }
+        ],
+        "commands": [
+            {
+                "command": "todoify.focus",
+                "title": "Todoify: Show Todo List",
+                "category": "Todoify"
+            },
+            {
+                "command": "todoify.refresh",
+                "title": "Todoify: Refresh",
+                "icon": "$(refresh)"
+            },
+            {
+                "command": "todoify.search",
+                "title": "Todoify: Search",
+                "icon": "$(search)"
+            },
+            {
+                "command": "todoify.clearSearch",
+                "title": "Todoify: Clear Search",
+                "icon": "$(clear-all)"
+            },
+            {
+                "command": "todoify.exportTodos",
+                "title": "Todoify: Export",
+                "icon": "$(export)"
+            },
+            {
+                "command": "todoify.sortBy",
+                "title": "Todoify: Sort Options",
+                "icon": "$(sort-precedence)"
+            },
+            {
+                "command": "todoify.toggleTodo",
+                "title": "Todoify: Toggle Todo Status",
+                "icon": "$(check)"
+            },
+            {
+                "command": "todoify.addSubtask",
+                "title": "Todoify: Add Subtask",
+                "icon": "$(list-ordered)"
+            },
+            {
+                "command": "todoify.addTags",
+                "title": "Todoify: Add Tags",
+                "icon": "$(tag)"
+            },
+            {
+                "command": "todoify.addNotes",
+                "title": "Todoify: Add Notes",
+                "icon": "$(note)"
+            },
+            {
+                "command": "todoify.changePriority",
+                "title": "Todoify: Change Priority",
+                "icon": "$(warning)"
+            },
+            {
+                "command": "todoify.duplicateTodo",
+                "title": "Todoify: Duplicate Todo",
+                "icon": "$(copy)"
+            },
+            {
+                "command": "todoify.deleteTodo",
+                "title": "Todoify: Delete Todo",
+                "icon": "$(trash)"
+            },
+            {
+                "command": "todoify.editText",
+                "title": "Edit Todo Text",
+                "icon": "$(edit)"
+            },
+            {
+                "command": "todoify.editNotes",
+                "title": "Edit Notes",
+                "icon": "$(note)"
+            },
+            {
+                "command": "todoify.editTags",
+                "title": "Edit Tags",
+                "icon": "$(tag)"
+            }
+        ],
+        "viewsContainers": {
+            "activitybar": [
+                {
+                    "id": "todoify",
+                    "title": "Todoify",
+                    "icon": "resources/icon.png"
+                }
+            ]
+        },
+        "views": {
+            "todoify": [
+                {
+                    "id": "todoify",
+                    "name": "Todoify"
+                }
+            ]
+        },
+        "menus": {
+            "view/title": [
+                {
+                    "command": "todoify.refresh",
+                    "when": "view == todoify",
+                    "group": "navigation"
+                },
+                {
+                    "command": "todoify.search",
+                    "when": "view == todoify",
+                    "group": "navigation"
+                },
+                {
+                    "command": "todoify.clearSearch",
+                    "when": "view == todoify",
+                    "group": "navigation"
+                },
+                {
+                    "command": "todoify.exportTodos",
+                    "when": "view == todoify",
+                    "group": "navigation"
+                },
+                {
+                    "command": "todoify.sortBy",
+                    "when": "view == todoify",
+                    "group": "navigation"
+                }
+            ],
+            "view/item/context": [
+                {
+                    "command": "todoify.toggleTodo",
+                    "when": "view == todoify && viewItem == todo",
+                    "group": "inline"
+                },
+                {
+                    "command": "todoify.addSubtask",
+                    "when": "view == todoify && viewItem == todo",
+                    "group": "1_modification"
+                },
+                {
+                    "command": "todoify.addTags",
+                    "when": "view == todoify && viewItem == todo",
+                    "group": "1_modification"
+                },
+                {
+                    "command": "todoify.addNotes",
+                    "when": "view == todoify && viewItem == todo",
+                    "group": "1_modification"
+                },
+                {
+                    "command": "todoify.changePriority",
+                    "when": "view == todoify && viewItem == todo",
+                    "group": "1_modification"
+                },
+                {
+                    "command": "todoify.duplicateTodo",
+                    "when": "view == todoify && viewItem == todo",
+                    "group": "1_modification"
+                },
+                {
+                    "command": "todoify.deleteTodo",
+                    "when": "view == todoify && viewItem == todo",
+                    "group": "1_modification"
+                },
+                {
+                    "command": "todoify.editText",
+                    "when": "view == todoify && viewItem == todo",
+                    "group": "inline"
+                },
+                {
+                    "command": "todoify.editNotes",
+                    "when": "view == todoify && viewItem == todo",
+                    "group": "inline"
+                },
+                {
+                    "command": "todoify.editTags",
+                    "when": "view == todoify && viewItem == todo",
+                    "group": "inline"
+                }
+            ]
+        }
+    },
+    "scripts": {
+        "vscode:prepublish": "npm run compile",
+        "compile": "tsc -p ./",
+        "watch": "tsc -watch -p ./",
+        "pretest": "npm run compile && npm run lint",
+        "lint": "eslint src --ext ts",
+        "test": "node ./out/test/runTest.js"
+    },
+    "devDependencies": {
+        "@types/vscode": "^1.102.0",
+        "@types/glob": "^8.1.0",
+        "@types/mocha": "^10.0.10",
+        "@types/node": "^22.16.3",
+        "@typescript-eslint/eslint-plugin": "^8.36.0",
+        "@typescript-eslint/parser": "^8.36.0",
+        "eslint": "^9.31.0",
+        "glob": "^11.0.3",
+        "mocha": "^11.7.1",
+        "typescript": "^5.8.3",
+        "@vscode/test-electron": "^2.5.2"
+    }
+}
