@@ -102,7 +102,7 @@ export class TodoCommands {
       const line = document.lineAt(item.line - 1);
       const lineText = line.text;
 
-      const todoMatch = TodoParser.getKeywordMatch(lineText);
+      const todoMatch = TodoParser.getKeywordMatch(lineText, item.file);
       if (!todoMatch) {
         throw new Error("Invalid todo format");
       }

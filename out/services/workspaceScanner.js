@@ -135,7 +135,7 @@ class WorkspaceScanner {
             const todos = [];
             lines.forEach((line, index) => {
                 try {
-                    const match = todoParser_1.TodoParser.getKeywordMatch(line);
+                    const match = todoParser_1.TodoParser.getKeywordMatch(line, file.fsPath);
                     if (!match)
                         return;
                     const key = `${file.fsPath}:${index + 1}`;
@@ -169,13 +169,6 @@ class WorkspaceScanner {
         }
     }
     isValidFileType(filePath) {
-        const validExtensions = [
-            ".ts", ".js", ".tsx", ".jsx", ".vue", ".py", ".java", ".cpp", ".c",
-            ".cs", ".php", ".rb", ".go", ".rs", ".swift", ".kt", ".scala",
-            ".html", ".css", ".scss", ".sass", ".less", ".md", ".txt",
-            ".yml", ".yaml", ".json", ".xml", ".sql", ".sh", ".ps1",
-            ".dart", ".r", ".m", ".pl", ".lua", ".elm", ".ex", ".exs"
-        ];
         const binaryExtensions = [
             ".jpg", ".jpeg", ".png", ".gif", ".bmp", ".svg", ".ico",
             ".pdf", ".doc", ".docx", ".xls", ".xlsx", ".ppt", ".pptx",
@@ -188,7 +181,7 @@ class WorkspaceScanner {
         if (binaryExtensions.includes(ext)) {
             return false;
         }
-        return validExtensions.includes(ext) || !ext;
+        return true;
     }
     deduplicateTodos(todos) {
         const uniqueTodos = new Map();

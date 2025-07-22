@@ -130,7 +130,7 @@ export class WorkspaceScanner {
 
       lines.forEach((line, index) => {
         try {
-          const match = TodoParser.getKeywordMatch(line);
+          const match = TodoParser.getKeywordMatch(line, file.fsPath);
           if (!match) return;
 
           const key = `${file.fsPath}:${index + 1}`;
@@ -166,14 +166,6 @@ export class WorkspaceScanner {
   }
 
   private isValidFileType(filePath: string): boolean {
-    const validExtensions = [
-      ".ts", ".js", ".tsx", ".jsx", ".vue", ".py", ".java", ".cpp", ".c",
-      ".cs", ".php", ".rb", ".go", ".rs", ".swift", ".kt", ".scala",
-      ".html", ".css", ".scss", ".sass", ".less", ".md", ".txt",
-      ".yml", ".yaml", ".json", ".xml", ".sql", ".sh", ".ps1",
-      ".dart", ".r", ".m", ".pl", ".lua", ".elm", ".ex", ".exs"
-    ];
-
     const binaryExtensions = [
       ".jpg", ".jpeg", ".png", ".gif", ".bmp", ".svg", ".ico",
       ".pdf", ".doc", ".docx", ".xls", ".xlsx", ".ppt", ".pptx",
@@ -189,7 +181,7 @@ export class WorkspaceScanner {
       return false;
     }
 
-    return validExtensions.includes(ext) || !ext;
+    return true;
   }
 
   private deduplicateTodos(todos: TodoItem[]): TodoItem[] {

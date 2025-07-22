@@ -2,7 +2,7 @@
     "name": "todoify",
     "displayName": "Todoify",
     "description": "A VS Code extension for easy todo management.",
-    "version": "0.1.4",
+    "version": "0.1.5",
     "publisher": "queaxtra",
     "author": {
         "name": "Queaxtra"
@@ -225,10 +225,10 @@
         }
     },
     "scripts": {
-        "vscode:prepublish": "npm run compile",
+        "vscode:prepublish": "bun run compile",
         "compile": "tsc -p ./",
         "watch": "tsc -watch -p ./",
-        "pretest": "npm run compile && npm run lint",
+        "pretest": "bın run compile && bun run lint",
         "lint": "eslint src --ext ts",
         "test": "node ./out/test/runTest.js"
     },
